@@ -15,7 +15,6 @@ webbrowser.open(path)
 endef
 export BROWSER_PYSCRIPT
 
-
 define PRINT_HELP_PYSCRIPT
 import re, sys
 
@@ -45,6 +44,8 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 # export PYTHON_SELECTOR
 # PYTHON_BIN := $(shell python -c "$$PYTHON_SELECTOR")
 
+PROJECT_URL := https://github.com/UNPSJB/robotchallenge
+
 help:	## Imprime ayuda
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
@@ -65,9 +66,19 @@ push: 	## Carga el código al telefono
 	done
 
 abrir_github:	## Abre el sitio de Github
-	$(BROWSER) https://github.com/UNPSJB/robotchallenge
+	$(BROWSER) $(PROJECT_URL)
 
-descargar_platform_tools:	##
-	https://dl.google.com/android/repository/platform-tools-latest-windows.zip
-	https://dl.google.com/android/repository/platform-tools-latest-linux.zip
-	https://dl.google.com/android/repository/platform-tools-latest-darwin.zip
+check_adb:
+	@adb help 1>/dev/null 2>/dev/null || echo "Te falta adb"
+
+
+shell: check_adb
+	@adb shell
+
+phone_logs: check_adb  ## Últimos logs de kivy
+	$(eval BASENAME=$(shell basename $(PWD)))
+	$(eval LOG_DIR=/storage/emulated/legacy/kivy/$(BASENAME)/.kivy/logs)
+	$(eval LAST_LOG=$(shell adb shell "ls /storage/emulated/legacy/kivy/robotchallenge/.kivy/logs" | sort | tail -n1))
+	@adb shell "cat $(LOG_DIR)/$(LAST_LOG)"
+
+	@#adb shell "cat $(DESTINATION)/.kivy/logs/*.txt"
