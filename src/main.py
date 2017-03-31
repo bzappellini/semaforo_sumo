@@ -154,9 +154,14 @@ class SemaforoApp(App):
     """Aplicacion de light app"""
     def __init__(self):
         super(SemaforoApp, self).__init__()
+        if sys.platform == 'darwin':
+            self.request_keyboard()
+        Logger.info("DEBUG: %s", DEBUG)
+
+
+    def request_keybarod(self, ):
         self._keyboard = Window.request_keyboard(self._keyboard_closed, self)
         self._keyboard.bind(on_key_down=self._on_keyboard_down)
-        Logger.info("DEBUG: %s", DEBUG)
 
     def _keyboard_closed(self):
         self._keyboard.unbind(on_key_down=self._on_keyboard_down)
@@ -177,6 +182,19 @@ class SemaforoApp(App):
         if key == 'q' and not others:
             sys.exit(1)
 
+    x, y = 0, 0
+    def to_window(self, x, y, initial=True, relative=False):
+        Logger.info("to_window x={} y={} initial={} relative={}".format(
+            x,
+            y,
+            initial,
+            relative,
+            )
+        )
+        return x, y
+
+    def on_pause(self, *args):
+        Logger.info("on_pause {}".format(repr(args)))
 
 if __name__ == '__main__':
     app = SemaforoApp()
