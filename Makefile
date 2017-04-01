@@ -27,6 +27,7 @@ endef
 export PRINT_HELP_PYSCRIPT
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
+DESTINATION := /sdcard/
 
 # define PYTHON_SELECTOR
 # # Busca el binario de python que tenga Kivy, primero el del sistema
@@ -58,7 +59,6 @@ run:	## Ejecuta localmente el proyecto
 push: 	## Carga el código al telefono
 	$(eval PWD=$(shell pwd))
 	$(eval BASENAME=$(shell basename $(PWD)))
-	$(eval DESTINATION=/storage/emulated/legacy/)
 	cd src && \
 	for file in *.py *.kv data/* android.txt; do \
 		echo $$file ; \
@@ -77,8 +77,6 @@ shell: check_adb
 
 phone_logs: check_adb  ## Últimos logs de kivy
 	$(eval BASENAME=$(shell basename $(PWD)))
-	$(eval LOG_DIR=/storage/emulated/legacy/kivy/$(BASENAME)/.kivy/logs)
+	$(eval LOG_DIR=$(DESTINATION)kivy/$(BASENAME)/.kivy/logs)
 	$(eval LAST_LOG=$(shell adb shell "ls /storage/emulated/legacy/kivy/robotchallenge/.kivy/logs" | sort | tail -n1))
 	@adb shell "cat $(LOG_DIR)/$(LAST_LOG)"
-
-	@#adb shell "cat $(DESTINATION)/.kivy/logs/*.txt"
